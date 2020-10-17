@@ -1,0 +1,64 @@
+version: '2.4'
+services:
+
+  balancer:
+    image: haproxy:2.2
+    hostname: balancer
+    restart: always
+    ports:
+      - "50051:50051"
+      - "8080:8080"
+    networks:
+      - test_net
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+
+  db:
+    image: mongo:4.4
+    hostname: db
+    restart: always
+    environment:
+      - MONGO_PORT=27017
+      - MONGO_REPLICA_NAME=default
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    command:
+      - "mongod"
+      - "--ipv6"
+      - "--bind_ip_all"
+      - "--wiredTigerCacheSizeGB"
+      - "1"
+    ports:
+      - "27017:27017"
+    networks:
+      - test_net
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+
+  product_service_1:
+    image: product_service:master
+    build: ./product_service
+    restart: always
+    networks:
+      - test_net
+    depends_on:
+      - db
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+
+  product_service_2:
+    image: product_service:master
+    restart: always
+    networks:
+      - test_net
+    depends_on:
+      - db
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+
+networks:
+  test_net:
+    driver: bridge
+    # enable_ipv6: true

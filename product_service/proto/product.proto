@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option go_package = ".;product";
+
+package product;
+
+service ProductService {
+  // fetch product and price from url
+  rpc Fetch(FetchRequest) returns (FetchResponse);
+
+  // get list of products sorted by condition
+  rpc List(ListRequest) returns (ListResponse);
+}
+
+// FetchRequest contains url of csv list with products and prices. Example: some product;10.99
+message FetchRequest {
+  string url = 1;
+}
+
+// FetchResponse return fetch result as bool success or not success, if not success error description will be set
+message FetchResponse {
+  bool success = 1;
+}
+
+// PagingParams contains params for pagination
+message PagingParams {
+  uint32 page_number = 1;
+  uint32 result_per_page = 2;
+  uint32 page_cont = 3;
+}
+
+// ListRequest contains condition for sorting by price; last updated; changes counter and every condition can be sorted by Ascending [default] or Descending
+message ListRequest {
+  message SortingParams {
+    enum Sorter {
+      name = 0;
+      price = 1;
+      last_updated = 2;
+      changes_count = 3;
+    }
+
+    Sorter sortby = 1;
+    bool dsc = 2; // true - Discending; false - Ascending [default]
+  }
+
+  repeated SortingParams sort = 1;
+  PagingParams paging = 2;
+}
+
+// ListResponse contains sorting results and paging params with paging counts
+message ListResponse {
+  message Product {
+    string name = 1;
+    int64 price = 2;
+    string last_updated = 3;
+    uint64 changes_count = 4;
+  }
+
+  repeated Product result = 1;
+  PagingParams paging = 2;
+}
