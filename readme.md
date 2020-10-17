@@ -1,4 +1,5 @@
 Статистика с балансера: http://localhost:8080/stats
+
 gRPC [protobuf]:  localhost:50051 (Reflection not implemented)
 
 В docker-compose сделал два сервиса, чтобы обращаться к ним по имени сервиса из балансировщика. По хорошему нужно было бы использовать scale, но тогда на имя сервиса отдается два ip и нужно делать дополнительную логику для формирования конфигурации балансировщика.
@@ -14,6 +15,9 @@ Proto файл собирается через api v1.
 6) Балансировка происходит на основе source адреса вызывающего, за счет этого, чтобы увидеть балансировку в действии, необходимо делать запросы с разных ip
 
 gRPC cli:
-./grpc_cli call localhost:50051 Fetch "url: 'http://localhost/test.csv'" --protofiles=product.proto --proto_path=[proto_path] --noremotedb
-./grpc_cli call localhost:50051 List "paging: { result_per_page:25 } sort: [{}]" --protofiles=product.proto --proto_path=[proto_path] --noremotedb
-./grpc_cli call localhost:50051 List "paging: { page_number: 1, result_per_page:25 } sort: [{sortby: 1, dsc: true}]" --protofiles=product.proto --proto_path=[proto_path] --noremotedb
+
+* ./grpc_cli call localhost:50051 Fetch "url: 'http://localhost/test.csv'" --protofiles=product.proto --proto_path=[proto_path] --noremotedb
+
+* ./grpc_cli call localhost:50051 List "paging: { result_per_page:25 } sort: [{}]" --protofiles=product.proto --proto_path=[proto_path] --noremotedb
+
+* ./grpc_cli call localhost:50051 List "paging: { page_number: 1, result_per_page:25 } sort: [{sortby: 1, dsc: true}]" --protofiles=product.proto --proto_path=[proto_path] --noremotedb
